@@ -10,7 +10,8 @@ class DHT20:
     The datasheet can be found at http://www.aosong.com/userfiles/files/media/Data%20Sheet%20DHT20%20%20A1.pdf
     """
     
-    def __init__(self, address: int, i2c: I2C):
+    def __init__(self,  i2c: I2C, address: int = 0x38):
+        # The default address is 0x38.
         self._address = address
         self._i2c = i2c
         sleep_ms(100)
@@ -108,3 +109,19 @@ class DHT20:
             'rh_adc': s_rh,
             'crc_ok': crc_ok
         }
+
+    def measure(self):
+        '''Measure temperature and humidity and store them in self.temp and self.humi'''
+
+        measurements = self.measurements
+        self.temp = round(measurements['t'], 1)
+        self.humi = round(measurements['rh'], 1)
+        # print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
+    
+    def temperature(self):
+        '''Return the temperature in °C'''
+        return self.temp
+    
+    def humidity(self):
+        '''Return the humidity in %RH'''
+        return self.humi

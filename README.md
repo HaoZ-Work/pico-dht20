@@ -1,37 +1,25 @@
 # pico-dht20
 
-This is a MicroPython library for the Raspberry Pi Pico and the 
-[DHT20](http://www.aosong.com/en/products-67.html) temperature and humidity sensor.
+This is a MicroPython library for
+[DHT20](http://www.aosong.com/en/products-67.html) temperature and humidity sensor. This fork is modified to have unified API with `dht` library from micropython. 
 
 ## Example
 ```python
-from machine import Pin, I2C
+from machine import Pin, SoftI2C
 from utime import sleep
 
 from dht20 import DHT20
 
 
-i2c0_sda = Pin(8)
-i2c0_scl = Pin(9)
-i2c0 = I2C(0, sda=i2c0_sda, scl=i2c0_scl)
+# use sda and scl port on ESP32
+i2c0_sda = Pin(21)
+i2c0_scl = Pin(22)
+i2c0 = SoftI2C(sda=i2c0_sda, scl=i2c0_scl)
 
-dht20 = DHT20(0x38, i2c0)
+dht20 = DHT20(i2c0)
+dht.measure()
 
 while True:
     measurements = dht20.measurements
-    print(f"Temperature: {measurements['t']} °C, humidity: {measurements['rh']} %RH")
+    print(f"Temperature: {dht.temperature()} °C, humidity: {dht.humidity} %RH")
     sleep(1)
-```
-`measurements` is a dictionary that contains the following values:
-
-| Field  | Description                                               |
-|--------|-----------------------------------------------------------|
-| t      | The temperature (°C)                                      |
-| t_adc  | The 'raw' temperature value as produced by the sensor     |
-| rh     | The relative humidity (%RH)                               | 
-| rh_adc | The 'raw' humidity value as produced by the sensor        |
-| crc_ok | The result of the Cyclic Redundancy Check (True or False) |
-
-This is the circuit for the example code above:
-
-![Fritzing wiring for the example code.](images/dht20.png "Fritzing")
